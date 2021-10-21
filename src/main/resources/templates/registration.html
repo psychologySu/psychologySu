@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PSYCHOLOGY</title>
+  <link rel="stylesheet" th:href="@{/css/normalize.css}">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto+Condensed:ital,wght@0,300;0,400;0,700;1,300;1,400;1,700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" th:href="@{/css/bootstrap-reboot.min.css}">
+  <link rel="stylesheet" th:href="@{/css/bootstrap-grid.min.css}">
+  <script src="https://kit.fontawesome.com/00dba8da38.js" crossorigin="anonymous"></script>
+  <link rel="stylesheet" th:href="@{/css/styles.min.css}">
+
+
+</head>
+<body>
+    <header>
+        <nav >
+          <div class="container">
+            <div class="row">
+              <div class="col-md-12">
+            <ul class="nav_list">
+              <li class="menu_item"><a href="index" class="menu_link">Главная</a></li>
+              <li class="menu_item"><a href="#" class="menu_link">Наука психология</a></li>
+              <li class="menu_item"><a href="#" class="menu_link">Наука неиробиология</a></li>
+              <li class="menu_item"><a href="coaches.html" class="menu_link">Наши психологи</a></li>
+              <li class="menu_item"><a href="#" class="menu_link">Контакты</a></li>
+              <li class="menu_item"><a href="registration" class="menu_link">Регистрация</a></li>
+            </ul>
+         </div>
+        </div>
+      </div>
+
+        </nav>
+       
+    <div class="bage">
+        <div class="container">
+          <div class="row">
+          <div class="col-lx-4 offset-lx-1 col-md-4 ">
+            <a class="subheader_link" href="#"><img class="Uber777_img" src="img/logo/Uber777.png" alt=""></a>
+            
+            <div class="descr_Uber">Сообщество врачей</div>
+          </div>
+          
+        
+          <div class="col-xl-2 offset-xl-2 col-md-3 offset-md-1">
+            <div class="descr_phone">Звоните нам ежедневно</div>
+            <a class = "phone_link" href="tel:+79527411697">8 952 741 16 97</a>
+                </div>
+
+          <div class="col-md-2 ">
+            <button class="button_phone">заказать звонок</button>
+          </div>
+          </div>
+          <section>
+            <div class="description">
+              <div class="row">
+                <div class="col-md-4 ">
+                  <h1>Регистрация</h1>
+                                
+          <form action="#" th:action="@{/registration}" th:object="${person}" method="post">
+                      <table>
+                        <tr>
+                            <td>Email:</td>
+                            <td><input type='text' th:field="*{email}" name='email' value=''></td>
+                        </tr>
+                        <tr>
+                          <td>Пароль:</td>
+                          <td><input type='text' th:field="*{password}" name='password' value=''></td>
+                      </tr>
+                        <tr>
+                            <td>Имя:</td>
+                            <td><input type='text' th:field="*{name}" name='name' /></td>
+                        </tr>
+                        <tr>
+                          <td>Фамилия:</td>
+                          <td><input type='text' th:field="*{surname}" name='surname' /></td>
+                      </tr>
+                      <tr>
+                        <td>Телефон:</td>
+                        <td><input type='text' th:field="*{phone}" name='phone' /></td>
+                     </tr>
+                     <tr>
+                      <td>К какому полу вы себя относите:</td>
+                      <td><input type='text' th:field="*{gender}" name='gender' /></td>
+                   </tr>
+                   <tr>
+                    <td>Введите вашу дату рождения:</td>
+                    <td><<input type="date" th:field="*{birthday}" name="birthday">
+                      </td>
+                 </tr>
+
+                        <tr>
+                            <td><input name="registration" type="submit" value="registration" /></td>
+                        </tr>
+                      </table>
+                  </form>
+  
+                </div>
+              </div>
+            </div>
+            
+          </section>
+      </div>
+    </div>
+    </header>
+    </body>
+    
+   
