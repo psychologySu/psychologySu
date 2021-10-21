@@ -61,15 +61,15 @@
               <div class="row">
                 <div class="col-md-4 ">
                   <h1>Вход</h1>
-                      <form name='f' action="login" method='POST'>
+                  <form action="#" th:action="@{/login}" th:object="${person}" method="post">
                           <table>
                             <tr>
                                 <td>Ваш Email:</td>
-                                <td><input type='text' name='username' value=''></td>
+                                <td><input type='text' field="*{username}" name='username' value=''></td>
                             </tr>
                             <tr>
                                 <td>Пароль:</td>
-                                <td><input type='password' name='password' /></td>
+                                <td><input type='password' field="*{password}" name='password' /></td>
                             </tr>
                             <tr>
                                 <td><input name="submit" type="submit" value="submit" /></td>

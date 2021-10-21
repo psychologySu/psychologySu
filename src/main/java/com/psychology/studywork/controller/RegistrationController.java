@@ -1,6 +1,7 @@
 package com.psychology.studywork.controller;
 
 import com.psychology.studywork.model.Person;
+import com.psychology.studywork.model.Role;
 import com.psychology.studywork.repository.PersonRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -40,6 +41,7 @@ public class RegistrationController {
         person.setEmail(email);
         person.setBirthday(LocalDate.parse(birthday));
         person.setPassword(password);
+        person.setRole(Role.CLIENT);
         personRepository.save(person);
         return "redirect:/login";
     }
