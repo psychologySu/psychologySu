@@ -34,6 +34,7 @@ public class RegistrationController {
             return "registration";
         }
         Person person = new Person();
+        person.setEnable(true);
         person.setTelephone(phone);
         person.setGender(gender);
         person.setName(name);

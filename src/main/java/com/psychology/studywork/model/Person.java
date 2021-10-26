@@ -26,18 +26,14 @@ public class Person{
     private LocalDate birthday;
     private String name;
     private String Surname;
-
-    public boolean isEnable() {
-        return enable;
-    }
-
     @Column(unique = true)
     private String email;
     private String password;
     private Role role;
     private boolean enable;
     private String certificate;
-
+    private String aboutMe;
+    private String telephone;
     public String getTelephone() {
         return telephone;
     }
@@ -45,9 +41,9 @@ public class Person{
     public void setTelephone(String telephone) {
         this.telephone = telephone;
     }
-
-    private String aboutMe;
-    private String telephone;
+    public boolean isEnable() {
+        return enable;
+    }
 
     public Person(String gender, LocalDate birthday, String name, String surname, String email, String password, String certificate, String aboutMe) {
         this.gender = gender;

@@ -59,46 +59,16 @@
           <section>
             <div class="description">
               <div class="row">
-                <div class="col-md-4 ">
-                  <h1>Регистрация</h1>
-                                
-          <form action="#" th:action="@{/registration}" th:object="${person}" method="post">
-                      <table>
-                        <tr>
-                            <td>Email:</td>
-                            <td><input type='text' field="*{email}" name='email' value=''></td>
-                        </tr>
-                        <tr>
-                          <td>Пароль:</td>
-                          <td><input type='password' field="*{password}" name='password' value=''></td>
-                      </tr>
-                        <tr>
-                            <td>Имя:</td>
-                            <td><input type='text' field="*{name}" name='name' /></td>
-                        </tr>
-                        <tr>
-                          <td>Фамилия:</td>
-                          <td><input type='text' field="*{surname}" name='surname' /></td>
-                      </tr>
-                      <tr>
-                        <td>Телефон:</td>
-                        <td><input type='text' ield="*{phone}" name='phone' /></td>
-                     </tr>
-                     <tr>
-                      <td>К какому полу вы себя относите:</td>
-                      <td><input type='text' field="*{gender}" name='gender' /></td>
-                   </tr>
-                   <tr>
-                    <td>Введите вашу дату рождения:</td>
-                    <td><<input type="date" field="*{birthday}" name="birthday">
-                      </td>
-                 </tr>
-
-                        <tr>
-                            <td><input name="registration" type="submit" value="registration" /></td>
-                        </tr>
-                      </table>
-                  </form>
+                <div class="col-md-10 offset-md-1">
+                  <h1>Список психологов</h1>
+                  <section th:each="person : ${coaches}">
+                    <table class =tableTeacher >
+                      <th>Имя</th><th th:text ="${person.name}"></th>
+                      <td>Фамилия</td><td th:text="${person.surname}"></td>
+                      <td>Спецификация</td><td th:text ="${person.aboutMe}"></td>
+                      <a th:href="@{'/coaches/' + ${person.Id}}">смотреть профиль</a>
+                    </table>                    
+                </section>
   
                 </div>
               </div>

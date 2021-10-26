@@ -9,6 +9,7 @@ import org.springframework.beans.factory.config.ListFactoryBean;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.client.HttpClientErrorException;
 import java.nio.charset.Charset;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -33,23 +35,20 @@ public class MainController {
         return "index";
     }
     @GetMapping("/coaches")
-    public String getCoaches(Map<String,Object> model){
-        List<Person> coaches = personRepository.findAll();
-        model.put("Coaches", coaches );
+    public String getCoaches(Model model){
+        List<Person> coaches = findCoaches();
+        model.addAttribute("coaches",coaches);
         return "coaches";
     }
     @GetMapping("/coaches/{id}")
-    public String getCoach(@PathVariable String Id, Map<String,String> model){
+    public String getCoach(@PathVariable String id, Model model){
         List<Person> result = findCoaches();
         if(result!=null){
             for (int i = 0; i < result.size() ; i++) {
-                if(result.get(i).getId()==Id){
-                    Person res = result.get(i);
-                    model.put("Name", res.getName());
-                    model.put("Surname", res.getSurname());
-                    model.put("AboutMe", res.getAboutMe());
-                    model.put("Certificate", res.getCertificate());
-                    return "/coaches/{id}";
+                if(result.get(i).getId().equals(id)){
+                    Person person = result.get(i);
+                    model.addAttribute("person",person);
+                    return "coach";
 
                 }
             }
@@ -132,7 +131,7 @@ public class MainController {
     }
     public List<Person> findCoaches(){
         List<Person> fullList = personRepository.findAll();
-        List<Person> listCoaches = new ListFactoryBean().getObjectType().cast(new Person());
+        List<Person> listCoaches = new ArrayList<Person>();
         for (int i = 0; i < fullList.size() ; i++) {
             if(fullList.get(i).getRole()== Role.COACH){
                 listCoaches.add(fullList.get(i));
