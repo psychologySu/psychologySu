@@ -59,28 +59,41 @@
           <section>
             <div class="description">
               <div class="row">
-                <div class="col-md-12">
-                  <h1 th:text = "${person.name}"></h1>
-                  <h1 th:text = "${person.surname}"></h1>
-                </div>
-              </div>
-              <div class="row">
-                <div class="col-md-4">
-                  <div class = "coach">
-                    <img class="bageCoach " src="../static/img/icons/wallet.png"> 
-                  </div>
-                </div>
-                <div class = "col-md-4 offset-md-1">
-                  <ul>
-                    <li th:text = "${person.aboutMe}">обо мне</li>
-                    <li th:text = "${person.telephone}">телефон</li>
-                  </ul>
-                </div>
-                <div>
-                  <a th:href = "@{'/getConsultation/' + ${person.Id}}"> записатся на встречу</a>
-                </div>
-                       
-                </section>
+                <div class="col-md-4 ">
+                  <h1>Запись на консультацию</h1>
+                                
+          <form action="#" th:action="@{/getConsultation}" th:object="${event}" method="post">
+                      <table>
+                        <tr>
+                            <td>Email:</td>
+                            <td><input type='text' field="*{email}" name='email' th:value="${email}"></td>
+                        </tr>
+                        <tr>
+                            <td>Имя:</td>
+                            <td><input type='text' field="*{name}" name='name' th:value = "${name}" /></td>
+                        </tr>
+                        <tr>
+                          <td>Фамилия:</td>
+                          <td><input type='text' field="*{surname}" name='surname' th:value = "${surname}"/></td>
+                      </tr>
+                      <tr>
+                        <td>Телефон:</td>
+                        <td><input type='text' ield="*{phone}" name='phone' th:value = "${telephone}" /></td>
+                     </tr>
+                     <tr>
+                      <td>Ваш пол:</td>
+                      <td><input type='text' field="*{gender}" name='gender' th:value ="${gender}" /></td>
+                   </tr>
+                   <tr>
+                    <td>Дата рождения:</td>
+                    <td><<input type="date" field="*{birthday}" name="birthday" th:value ="${#dates.format(birthday, 'dd-MMM-yyyy')}">
+                      </td>
+                 </tr>
+                        <tr>
+                            <td><input name="Записаться" type="submit" value="getConsultation" /></td>
+                        </tr>
+                      </table>
+                  </form>
   
                 </div>
               </div>

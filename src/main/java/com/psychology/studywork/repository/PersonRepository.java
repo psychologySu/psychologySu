@@ -12,4 +12,5 @@ import java.util.Optional;
 public interface PersonRepository extends CrudRepository<Person, String> {
    Person findByEmailIgnoreCase(@Param("email") String email);
    List<Person> findAll();
+   Person findByName(@Param("name") String name);
 }

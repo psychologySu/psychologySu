@@ -7,7 +7,10 @@ import com.psychology.studywork.repository.PersonRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ListFactoryBean;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpRequest;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -15,6 +18,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.client.HttpClientErrorException;
+
+import javax.servlet.http.HttpServletRequest;
 import java.nio.charset.Charset;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -25,6 +30,8 @@ import java.util.Optional;
 
 @Controller
 public class MainController {
+
+
     @Autowired
     EventRepository eventRepository;
     @Autowired
@@ -46,6 +53,7 @@ public class MainController {
         if(result!=null){
             for (int i = 0; i < result.size() ; i++) {
                 if(result.get(i).getId().equals(id)){
+
                     Person person = result.get(i);
                     model.addAttribute("person",person);
                     return "coach";
@@ -56,18 +64,21 @@ public class MainController {
 
 
     }
-    @GetMapping("/getConsultation")
-    public String getConsultation(@RequestParam String clientId,
-                                  @RequestParam String coachId,
+    @GetMapping("/getConsultation/{Id}")
+    public String getConsultation(@PathVariable String Id,
                                   Map<String,Object> model)
     {
-        Optional<Person> getPerson = personRepository.findById(clientId);
+        String coachId = Id;
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String clientEmail =  auth.getName();
+        Optional<Person> getPerson = Optional.ofNullable(personRepository.findByEmailIgnoreCase(clientEmail));
         model.put("create",LocalDateTime.now());
         model.put("when", "");
         Optional<Person> coach = personRepository.findById(coachId);
         if(!coach.isPresent()){
             return "/coaches";  ///******!!!!СДЕЛАТЬ ОБРАБОТЧИК ОШИБОК!!!!****/////
         }
+        model.put("clientEmail", clientEmail);
         model.put("coachId", coachId);
         model.put("description","" );
         if(getPerson.isPresent()){
@@ -78,7 +89,7 @@ public class MainController {
             model.put("gender", person.getGender());
             model.put("email",person.getEmail());
             model.put("telephone", person.getTelephone());
-            return "clientGetConsultation";
+            return "getConsultation";
         }
         else{
             model.put("name", "");
@@ -86,10 +97,10 @@ public class MainController {
             model.put("gender", "");
             model.put("email","");
             model.put("telephone","");
-            return "guestGetConsultation";
+            return "getConsultation";
             }
     }
-    @PostMapping("/getConsultation")
+    @PostMapping("/getConsultation/{Id}")
     public String createNewConsultation(
                                         @RequestParam String coachId,
                                         @RequestParam String when,
