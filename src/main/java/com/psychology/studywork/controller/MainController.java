@@ -21,6 +21,7 @@ import org.springframework.web.client.HttpClientErrorException;
 
 import javax.servlet.http.HttpServletRequest;
 import java.nio.charset.Charset;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -78,6 +79,7 @@ public class MainController {
         if(!coach.isPresent()){
             return "/coaches";  ///******!!!!СДЕЛАТЬ ОБРАБОТЧИК ОШИБОК!!!!****/////
         }
+
         model.put("clientEmail", clientEmail);
         model.put("coachId", coachId);
         model.put("description","" );
@@ -102,27 +104,30 @@ public class MainController {
     }
     @PostMapping("/getConsultation/{Id}")
     public String createNewConsultation(
-                                        @RequestParam String coachId,
-                                        @RequestParam String when,
+                                        @PathVariable String Id,
+                                        @RequestParam String data,
                                         @RequestParam String description,
-                                        @RequestParam String clientId,
                                         @RequestParam String name,
                                         @RequestParam String surname,
+                                        @RequestParam String birthday,
+                                        @RequestParam String typeOfEvent,
                                         @RequestParam String gender,
                                         @RequestParam String email,
                                         @RequestParam String telephone,
                                         Map<String,Object> model )
     {
-        Optional<Person>coach = personRepository.findById(coachId);
+        Optional<Person>coach = personRepository.findById(Id);
         if(!coach.isPresent()){
             HttpClientErrorException.BadRequest.create(HttpStatus.BAD_REQUEST,"Not Found this coach", new HttpHeaders(), new byte[128], Charset.defaultCharset());
         }
         Event event = new Event();
-        event.setIdCoach(coachId);
-        event.setData(LocalDateTime.parse(when));
-        event.setTypeOfEvent("consultation");
+        event.setIdCoach(Id);
+        event.setData(LocalDateTime.parse(data));
+        event.setTypeOfEvent(typeOfEvent);
         event.setDescription(description);
-        Optional<Person> client = personRepository.findById(clientId);
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String clientEmail =  auth.getName();
+        Optional<Person> client = Optional.ofNullable(personRepository.findByEmailIgnoreCase(clientEmail));
         if(client.isPresent()){
             event.setIdClient(client.get().getId());
         }else{
@@ -132,11 +137,12 @@ public class MainController {
             person.setName(name);
             person.setGender(gender);
             person.setTelephone(telephone);
+            person.setBirthday(LocalDate.parse(birthday));
             personRepository.save(person);
             event.setIdClient(person.getId());
         }
         eventRepository.save(event);
-        return "redirect:/main";
+        return "redirect:/";
 
 
     }
