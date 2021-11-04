@@ -57,15 +57,45 @@
           </div>
           </div>
           <section>
-            <div class="row">
-              <div class="col-md-10 offset-md-1">
+            
+            <div class="row">  
+              <div class="col-md-2">
+                <table>
+                                    
+                  <tr>
+                    <td><img class = "weaterIcon" th:src="@{'img/48/' + ${icon}+ '.png'}" alt=""></td><td class = thempTable th:text = "${temp}"></td>
+                  </tr> 
+                  <tr class = "ThemperParametrs">
+                    <td >Скорость ветра</td><td th:text = "${wind_speed}"></td>
+                  </tr> 
+                  <tr class = "ThemperParametrs">
+                    <td>Порыв ветра</tdclass><td th:text = "${wind_gust}"></td>
+                  </tr> 
+                  <tr class = "ThemperParametrs">
+                    <td>Давление мм.р.с.</td><td th:text = "${pressure_mm}"></td>
+                  </tr> 
+                  <tr class = "ThemperParametrs">
+                    <td>Температура</td><td th:text = "${temp}"></td>
+                  </tr> 
+                  <tr class = "ThemperParametrs">
+                    <td>Чувствуется как</td><td th:text = "${feels_like}"></td>
+                  </tr> 
+                  <tr class = "ThemperParametrs">
+                    <td>Влажность воздуха</td><td th:text = "${humidity}"></td>
+                  </tr>                   
+                </table>                
+                     <img class = "logotypeWeather" src="img/48/logo.png" alt="">                    
+              </div>           
+              <div class="col-md-8 ">
                 <h1 class = "header_text1">Сервис PsychologySu!</h1>
-                <h2 class = "header_text2" >Если вы оказались в трудной ситтуации мы с радостью вам поможем!</h2>
-                <div class="description">Наша компания работает с проверенными психологами, имеющими опыт работы. Каждый психолог является специалистом в своей области и с радостью поможет вам.
+                <h2 class = "header_text2" >Всегда готовы вам помочь</h2>
+                <div class="description">Наша компания работает с проверенными психологами, имеющими опыт работы. 
                 </div>
                 <button class = "section_button">ОТПРАВИТЬ ЗАЯВКУ!</button>
               </div>
+             
             </div>
+            
           </section>
       </div>
     </div>
@@ -74,6 +104,7 @@
       <div class="container">
           
           <div class="row">
+            
               <div class="col-md-8 offset-md-2">
                 <div class="label">
                   преимущества

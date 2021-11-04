@@ -4,11 +4,12 @@ import com.psychology.studywork.model.Person;
 import com.psychology.studywork.model.Role;
 import com.psychology.studywork.repository.EventRepository;
 import com.psychology.studywork.repository.PersonRepository;
+import net.minidev.json.JSONObject;
+import net.minidev.json.parser.JSONParser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ListFactoryBean;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpRequest;
-import org.springframework.http.HttpStatus;
+import org.springframework.http.*;
+import org.springframework.http.codec.cbor.Jackson2CborDecoder;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
@@ -18,28 +19,40 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriTemplateHandler;
 
 import javax.servlet.http.HttpServletRequest;
+import java.net.URI;
 import java.nio.charset.Charset;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 
 @Controller
 public class MainController {
 
-
+    @Autowired
+    RestTemplate restTemplate;
     @Autowired
     EventRepository eventRepository;
     @Autowired
     PersonRepository personRepository;
 
     @GetMapping("/")
-    public String homepage(){
+    public String homepage(Model model)
+    {
+        HashMap<String,String> m = getWeather();
+        model.addAttribute("now",m.get("now"));
+        model.addAttribute("now_gt",m.get("now_gt"));
+        model.addAttribute("icon",m.get("icon"));
+        model.addAttribute("wind_speed",m.get("wind_speed"));
+        model.addAttribute("wind_gust",m.get("wind_gust"));
+        model.addAttribute("pressure_mm",m.get("pressure_mm"));
+        model.addAttribute("temp",m.get("temp"));
+        model.addAttribute("feels_like",m.get("feels_like"));
+        model.addAttribute("humidity",m.get("humidity"));
         return "index";
     }
     @GetMapping("/coaches")
@@ -156,6 +169,41 @@ public class MainController {
         }
         return listCoaches;
     }
+    private HashMap<String, String> getWeather() {
+
+        JSONObject ob= getJSONObject();
+        HashMap<String, String > result = new HashMap<>();
+        result.put("now",ob.get("now").toString());
+        result.put("now_gt",(String) ob.get("now_gt"));
+        LinkedHashMap<String,Object> fact =(LinkedHashMap<String, Object>) ob.get("fact");
+        result.put("icon", (String)fact.get("icon"));
+        String f = fact.get("wind_speed").getClass().toString();
+        if(f.equals("class java.lang.Integer")){
+            result.put("wind_speed", Integer.toString((Integer)fact.get("wind_speed")));
+        }
+        if(f.equals("class java.lang.double")){
+            result.put("wind_speed", Double.toString((Double)fact.get("wind_speed")));
+        }
+        result.put("wind_gust", Double.toString((Double)fact.get("wind_gust")));
+        result.put("pressure_mm", Integer.toString((Integer)fact.get("pressure_mm")));
+        result.put("temp", Integer.toString((Integer)fact.get("temp")));
+        result.put("feels_like", Integer.toString((Integer)fact.get("feels_like")));
+        result.put("humidity",Integer.toString((Integer)fact.get("humidity")));
+        return result;
+    }
+    private JSONObject getJSONObject(){
+        String key = "X-Yandex-API-Key: b1546c10-03aa-41aa-9d7a-6ecc3782dc1d";
+        final String uri = "https://api.weather.yandex.ru/v2/informers?lat=56.8519&lon=60.6122&lang=ru_RU X-Yandex-API-Key:b1546c10-03aa-41aa-9d7a-6ecc3782dc1d" ;
+        HttpHeaders headers = new HttpHeaders();
+        headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
+
+        headers.set("X-Yandex-API-Key", "b1546c10-03aa-41aa-9d7a-6ecc3782dc1d");
+        HttpEntity<String> entity = new HttpEntity<String>( headers);
+        ResponseEntity<JSONObject> res = restTemplate.exchange("https://api.weather.yandex.ru/v2/informers?lat=56.8519&lon=60.6122&lang=ru_RU", HttpMethod.GET,entity,JSONObject.class);
+        JSONObject result  = res.getBody();
+        return result;
+    }
+
 
 
 }
