@@ -5,12 +5,12 @@ import com.psychology.studywork.model.Role;
 import com.psychology.studywork.repository.PersonRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.stereotype.Repository;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.time.LocalDate;
+import java.util.HashSet;
 
 @Controller
 public class RegistrationController {
@@ -42,7 +42,9 @@ public class RegistrationController {
         person.setEmail(email);
         person.setBirthday(LocalDate.parse(birthday));
         person.setPassword(password);
-        person.setRole(Role.CLIENT);
+        HashSet<Role> roles = new HashSet<>();
+        roles.add(Role.CLIENT);
+        person.setRoles(roles);
         personRepository.save(person);
         return "redirect:/login";
     }

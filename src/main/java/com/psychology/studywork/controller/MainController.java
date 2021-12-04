@@ -5,11 +5,8 @@ import com.psychology.studywork.model.Role;
 import com.psychology.studywork.repository.EventRepository;
 import com.psychology.studywork.repository.PersonRepository;
 import net.minidev.json.JSONObject;
-import net.minidev.json.parser.JSONParser;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.config.ListFactoryBean;
 import org.springframework.http.*;
-import org.springframework.http.codec.cbor.Jackson2CborDecoder;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
@@ -20,10 +17,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.web.util.UriTemplateHandler;
 
-import javax.servlet.http.HttpServletRequest;
-import java.net.URI;
 import java.nio.charset.Charset;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -43,6 +37,15 @@ public class MainController {
     @GetMapping("/")
     public String homepage(Model model)
     {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String clientEmail =  auth.getName();
+        Optional<Person> getPerson = Optional.ofNullable(personRepository.findByEmailIgnoreCase(clientEmail));
+        if(getPerson.isPresent()) {
+            model.addAttribute("loginValue", "/myspace");
+            model.addAttribute("loginText","Личный кабинет");
+        }else{model.addAttribute("loginValue","/login");
+            model.addAttribute("loginText","Авторизация");}
+    
         HashMap<String,String> m = getWeather();
         model.addAttribute("now",m.get("now"));
         model.addAttribute("now_gt",m.get("now_gt"));
@@ -78,6 +81,21 @@ public class MainController {
 
 
     }
+    @GetMapping("/myspace")
+    public String getMySpace(){
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String clientEmail =  auth.getName();
+        Optional<Person> getPerson = Optional.ofNullable(personRepository.findByEmailIgnoreCase(clientEmail));
+       Person person = getPerson.get();
+       Set<Role>roles = person.getRoles();
+
+        if (roles.contains(Role.ADMIN)) {
+            return "redirect:adminSpace";
+        }if(roles.contains(Role.COACH)){
+            return "redirect:coachSpace";
+        }
+        return "redirect:clientSpace";
+    }
     @GetMapping("/getConsultation/{Id}")
     public String getConsultation(@PathVariable String Id,
                                   Map<String,Object> model)
@@ -104,6 +122,7 @@ public class MainController {
             model.put("gender", person.getGender());
             model.put("email",person.getEmail());
             model.put("telephone", person.getTelephone());
+            model.put("birthday", person.getBirthday());
             return "getConsultation";
         }
         else{
@@ -135,7 +154,13 @@ public class MainController {
         }
         Event event = new Event();
         event.setIdCoach(Id);
-        event.setData(LocalDateTime.parse(data));
+        try {
+            event.setData(LocalDateTime.parse(data));
+        }
+        catch (Exception ex){
+            System.out.println("Ошибка ввода даты при регистрации события");
+            return "getConsultation";
+        }
         event.setTypeOfEvent(typeOfEvent);
         event.setDescription(description);
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -163,7 +188,7 @@ public class MainController {
         List<Person> fullList = personRepository.findAll();
         List<Person> listCoaches = new ArrayList<Person>();
         for (int i = 0; i < fullList.size() ; i++) {
-            if(fullList.get(i).getRole()== Role.COACH){
+            if(fullList.get(i).getRoles().contains(Role.COACH)){
                 listCoaches.add(fullList.get(i));
             }
         }
@@ -184,7 +209,13 @@ public class MainController {
         if(f.equals("class java.lang.double")){
             result.put("wind_speed", Double.toString((Double)fact.get("wind_speed")));
         }
-        result.put("wind_gust", Double.toString((Double)fact.get("wind_gust")));
+        f = fact.get("wind_gust").getClass().toString();
+        if(f.equals("class java.lang.Integer")){
+            result.put("wind_gust", Integer.toString((Integer)fact.get("wind_gust")));
+        }
+        if(f.equals("class java.lang.double")){
+            result.put("wind_gust", Double.toString((Double)fact.get("wind_gust")));
+        }
         result.put("pressure_mm", Integer.toString((Integer)fact.get("pressure_mm")));
         result.put("temp", Integer.toString((Integer)fact.get("temp")));
         result.put("feels_like", Integer.toString((Integer)fact.get("feels_like")));

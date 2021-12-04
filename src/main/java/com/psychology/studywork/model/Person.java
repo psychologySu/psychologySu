@@ -3,18 +3,20 @@ package com.psychology.studywork.model;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.GenericGenerator;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Data
 @NoArgsConstructor
-public class Person{
+public class Person implements UserDetails {
     @Id
     @GeneratedValue(generator = "system-uuid")
     @GenericGenerator(name = "system-uuid",strategy = "uuid")
@@ -29,7 +31,10 @@ public class Person{
     @Column(unique = true)
     private String email;
     private String password;
-    private Role role;
+    @ElementCollection(targetClass = Role.class, fetch = FetchType.EAGER)
+    @CollectionTable(name = "person_role", joinColumns = @JoinColumn(name = "Id"))
+    @Enumerated(EnumType.STRING)
+    private Set<Role> roles;
     private boolean enable;
     private String certificate;
     private String aboutMe;
@@ -54,7 +59,9 @@ public class Person{
         this.password = password;
         this.certificate = certificate;
         this.aboutMe = aboutMe;
-        this.role = Role.CLIENT;
+        Set <Role> roles = new HashSet<Role>();
+        roles.add(Role.CLIENT);
+        this.roles = roles;
     }
 
     public String getId() {
@@ -105,20 +112,50 @@ public class Person{
         this.email = email;
     }
 
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return getRoles();
+    }
+
     public String getPassword() {
         return password;
+    }
+
+    @Override
+    public String getUsername() {
+        return this.email;
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return isEnable();
     }
 
     public void setPassword(String password) {
         this.password = password;
     }
 
-    public Role getRole() {
-        return role;
+    public Set<Role> getRoles() {
+        return roles;
     }
 
-    public void setRole(Role role) {
-        this.role = role;
+    public void setRoles(Set<Role> roles) {
+        this.roles = roles;
     }
 
     public String getCertificate() {

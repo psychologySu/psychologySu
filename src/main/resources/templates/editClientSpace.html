@@ -60,62 +60,54 @@ xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
           </div>
           <section>
             <div class="description">
-              <h1>Запись на консультацию</h1>
-              <div class="row">
-                <div class="col-md-5 ">                  
-                      <h2> Данные пользователя</h2>
-          <form action="#" th:action="@{'/getConsultation/' + ${coachId}}" th:object="${model}" method="post">
-                      <table>
-                        <tr>
-                            <td>Email:</td>
-                            <td><input type='text' field="*{email}" name='email' th:value="${email}"></td>
-                        </tr>
-                        <tr>
-                            <td>Имя:</td>
-                            <td><input type='text' field="*{name}" name='name' th:value = "${name}" /></td>
-                        </tr>
-                        <tr>
-                          <td>Фамилия:</td>
-                          <td><input type='text' field="*{surname}" name='surname' th:value = "${surname}"/></td>
-                      </tr>
-                      <tr>
-                        <td>Телефон:</td>
-                        <td><input type='text' ield="*{phone}" name='telephone' th:value = "${telephone}" /></td>
+                <form action="#" th:action="@{'/editClientSpace'}" th:object="${model}" method="post"></form>
+              <h1> Редактирование информации о пользователе </h1>
+              <div class="row">                                     
+          
+            <div class="col-md-5 text-left">                  
+                        
+                            <table class = "tableOfPersonEvent">
+                              <tr>
+                                <td>Имя:</td>
+                                <td><input type='text' field="*{name}" name='name' th:value = "${name}" /></td>
+                            </tr>
+                            <tr>
+                              <td>Фамилия:</td>
+                              <td><input type='text' field="*{surname}" name='surname' th:value = "${surname}"/></td>
+                          </tr>
+                          <tr>
+                            <td>Телефон:</td>
+                            <td><input type='text' ield="*{phone}" name='telephone' th:value = "${telephone}" /></td>
+                         </tr>
+                         <tr>
+                          <td>Ваш пол:</td>
+                          <td><input type='text' field="*{gender}" name='gender' th:value ="${gender}" /></td>
+                       </tr>
+                       <tr>
+                        <td>Ваш email:</td>
+                        <td><input type='text' field="*{email}" name='gender' th:value ="${email}" /></td>
                      </tr>
-                     <tr>
-                      <td>Ваш пол:</td>
-                      <td><input type='text' field="*{gender}" name='gender' th:value ="${gender}" /></td>
-                   </tr>
-                   <tr>
-                    <td>Дата рождения:</td>
-                    <td><input type="date" field="*{birthday}" name="birthday" th:value ="${birthday}">
-                      </td>
-                 </tr>                        
-                      </table>
+                       <tr>
+                        <td>Дата рождения:</td>
+                        <td><input type="date" field="*{birthday}" name="birthday" th:value ="${birthday}">
+                          </td>
+                     </tr>             
+                        </table> 
+                        <div>---------------</div>                          
+                       
+                      
                   
   
                 </div>
                
                 <div class="col-md-5 offset-md-1">
                   <table>
-                    <tr>
-                      <td>Тип консультации:</td>
-                      <td><input type='text' field="*{typeOfEvent}" name='typeOfEvent' th:value="${typeOfEvent}"></td>
-                  </tr>
-                  <tr>
-                      <td>Характер проблеммы:</td>
-                      <td><input type='text' field="*{description}" name='description' th:value = "${description}" /></td>
-                  </tr>
-                  <tr>
-                    <td>Дата:</td>
-                    <td><input type="datetime-local" field="*{datetime-local}" name="data" th:value ="${data}">
-                      </td>
-                 </tr>
+                    
                   </table>
                   
                 </div>
                 
-              <button class="button_phone" name="Записаться" type="submit" value = "@{'/getConsultation/' + ${coachId}}" >заказать звонок</button>
+              
               
               </form>
               </div>

@@ -24,8 +24,8 @@ public class DirectoryUserDetailsService  implements UserDetailsService {
                 String password = encoder.encode(person.getPassword());
                 return User.withUsername(person.getEmail())
                         .accountLocked(!person.isEnable())
-                        .password(password)
-                        .roles(person.getRole().name()).build();
+                        .password(password).authorities(person.getRoles())
+                        .build();
 
             }
         }catch(Exception ex){

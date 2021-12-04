@@ -94,6 +94,12 @@ table.tableTeacher {
   margin: 6px, 10px, 6px, 10px;
 }
 
+.tableOfPersonEvent {
+  margin-top: 10px;
+  width: 100%;
+  text-align-last: left;
+}
+
 .subheader_link {
   max-width: 100%;
   height: 32px;

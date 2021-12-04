@@ -29,7 +29,7 @@
               <li class="menu_item"><a href="#" class="menu_link">Наука неиробиология</a></li>
               <li class="menu_item"><a href="/coaches" class="menu_link">Наши психологи</a></li>
               <li class="menu_item"><a href="#" class="menu_link">Контакты</a></li>
-              <li class="menu_item"><a href="/login" class="menu_link">Вход в личный кабинет</a></li>
+              <li class="menu_item"><a th:href="${loginValue}" th:text="${loginText}" class="menu_link"></a></li>
             </ul>
          </div>
         </div>
@@ -51,9 +51,12 @@
             <div class="descr_phone">Звоните нам ежедневно</div>
             <a class = "phone_link" href="tel:+79527411697">8 952 741 16 97</a>
                 </div>
-
           <div class="col-md-2 ">
-            <button class="button_phone">заказать звонок</button>
+            <form th:action="@{/logout}" method="post">
+              <button class="button_phone" type="submit" value="Sign Out">Выход</button>
+            </form>
+                
+           
           </div>
           </div>
           <section>

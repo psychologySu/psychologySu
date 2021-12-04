@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 @Entity
 @Data
 @NoArgsConstructor
-public class Event {
+public class Event implements Comparable<Event> {
     @Id
     @GeneratedValue(generator = "system-uuid")
     @GenericGenerator(name = "system-uuid",strategy = "uuid")
@@ -22,6 +22,7 @@ public class Event {
     private String idCoach;
     private String idClient;
     private String typeOfEvent;
+
     Event(String idCoach, String idClient, String typeOfEvent, String description, LocalDateTime data){
         this.idCoach=idCoach;
         this.idClient = idClient;
@@ -90,7 +91,10 @@ public class Event {
     public void setTypeOfEvent(String typeOfEvent) {
         this.typeOfEvent = typeOfEvent;
     }
-
+    @Override
+    public int compareTo(Event o) {
+        return getData().compareTo(o.getData());
+    }
 
 
 }
