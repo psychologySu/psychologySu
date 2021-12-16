@@ -28,10 +28,10 @@ xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
                 <ul class="nav_list">
                   <li class="menu_item"><a href="/" class="menu_link">Главная</a></li>
                   <li class="menu_item"><a href="#" class="menu_link">Наука психология</a></li>
-                  <li class="menu_item"><a href="/makeMC" class="menu_link">Создать медкарту</a></li>
-                  <li class="menu_item"><a href="/coaches" class="menu_link">Психологи</a></li>
-                  <li class="menu_item"><a href="/clients" class="menu_link">Клиенты</a></li>
-                  <li class="menu_item"><a href="/editClientPage" class="menu_link">Редактировать</a></li>
+                  <li class="menu_item"><a href="#" class="menu_link">Наука неиробиология</a></li>
+                  <li class="menu_item"><a href="/coaches" class="menu_link">Наши психологи</a></li>
+                  <li class="menu_item"><a href="#" class="menu_link">Контакты</a></li>
+                  <li class="menu_item"><a href="/myspace" class="menu_link">Вход в личный кабинет</a></li>
                 </ul>
          </div>
         </div>
@@ -43,8 +43,7 @@ xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
         <div class="container">
           <div class="row">
           <div class="col-lx-4 offset-lx-1 col-md-4 ">
-            <a class="subheader_link" href="#"><img class="Uber777_img" src="img/logo/Uber777.png" alt=""></a>
-            
+            <a class="subheader_link" href="#"><img class="Uber777_img" src="../img/logo/Uber777.png" alt=""></a>
             <div class="descr_Uber">Сообщество врачей</div>
           </div>
           
@@ -62,40 +61,26 @@ xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
           </div>
           <section>
             <div class="description">
-                <form action="#" th:action="@{'/getCoachSpace'}" th:object="${model}" method="get">
-              <h1 th:text = "${person.name}"> </h1> <h1 th:text = "${person.surname}"></h1>
-              <div class="row">                                     
-          
-            <div class="col-md-5 text-left">
-                      <h2>Ближайшие события</h2>
-                        <th:block th:each="event : ${events}">
-                            <table class = "tableOfPersonEvent">
-                            <tr>
-                                <td>Дата</td>
-                                <td th:text = "${event.data}"></td>
-                            </tr>
-                            <tr>
-                                <td>Описание</td>
-                                <td th:text = "${event.description}"></td>
-                            </tr>
-                            <tr>
-                                <td>Клиент</td>
-                                <td><a th:href="@{'/clients/' + ${event.idClient}}">Страница пациента</a></td>
-                            </tr>
-                            <tr>
-                                <td>Тип консультации</td>
-                                <td th:text = "${event.typeOfEvent}"></td>
-                            </tr>
-                            <tr>
-                              <td><a th:href="@{'/editEvent/' + ${event.Id}}">Редактировать событие</a></td>
-                            </tr>
-                            <tr>                              
-                              <td><a th:href="@{'/deleteEvent/' + ${event.Id}}">удалить событие</a></td>
-                            </tr>
-                        </table> 
-                        <div>---------------</div>                          
-                        </th:block>
-                      
+              <h1>Создание медицинской карты</h1>
+              <div class="row">
+                <div class="col-md-5 ">                  
+                      <h2> Введите данные</h2>
+          <form action="#" th:action="addMedicalCard" th:object="${model}" method="post">
+                    <h2>Данные пациента</h2>
+                      <table>
+                        <tr>
+                            <td>Пол:</td>
+                            <td><input type='text' field="*{gender}" name='gender'/></td>
+                        </tr>
+                        <tr>
+                            <td>Возраст:</td>
+                            <td><input type='text' field="*{yearsOld}" name='yearsOld'/></td>
+                        </tr>
+                        <tr>
+                          <td>В отношениях</td>
+                          <td><input type="checkbox" field="*{isInRelationship}" name="isInRelationship"></td>
+                      </tr>                                    
+                      </table>
                   
   
                 </div>
@@ -103,14 +88,14 @@ xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
                 <div class="col-md-5 offset-md-1">
                   <table>
                     <tr>
-                      <td>Создать карту клиента</td>
-                      <td><a th:href="@{'/addMedicalCard'}">Страница пациента</a></td>
-                  </tr>
+                      <td>История:</td>
+                      <td><input type='text' field="*{story}" name='story' th:value="${story}"></td>
+                  </tr>                  
                   </table>
                   
                 </div>
                 
-              
+              <button class="button_phone" name="Записаться" type="submit" value = "/addMedicalCard" >Добавить медицинскую карту</button>
               
               </form>
               </div>

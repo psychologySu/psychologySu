@@ -40,10 +40,10 @@ public class ClientController {
 
     private List<Event> getClientEvents(String idClient){
         List<Event> events = eventRepository.findAll();
-        List<Event> clientEvents = new ArrayList<Event>() ;
-        for (int i = 0; i < events.size() ; i++) {
-            if(events.get(i).getIdClient().equals(idClient)){
-                clientEvents.add(events.get(i));
+        List<Event> clientEvents = new ArrayList<>() ;
+        for (Event event : events) {
+            if (event.getIdClient().equals(idClient)) {
+                clientEvents.add(event);
             }
         }
         return clientEvents;

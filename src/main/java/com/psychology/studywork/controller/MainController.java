@@ -55,10 +55,7 @@ public class MainController {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String clientEmail =  auth.getName();
         Optional<Person> getPerson = Optional.ofNullable(personRepository.findByEmailIgnoreCase(clientEmail));
-        if(getPerson.isPresent()){
-            return true;
-        }
-        return false;
+        return getPerson.isPresent();
     }
 
     private void fillWeatherForm(Model model){
@@ -85,10 +82,9 @@ public class MainController {
     public String getCoach(@PathVariable String id, Model model){
         List<Person> result = findCoaches();
         if(result != null){
-            for (int i = 0; i < result.size() ; i++) {
-                if(result.get(i).getId().equals(id)){
-                    Person person = result.get(i);
-                    model.addAttribute("person",person);
+            for (Person value : result) {
+                if (value.getId().equals(id)) {
+                    model.addAttribute("person", value);
                     return "coach";
                 }
             }
@@ -98,10 +94,10 @@ public class MainController {
 
     public List<Person> findCoaches(){
         List<Person> fullList = personRepository.findAll();
-        List<Person> listCoaches = new ArrayList<Person>();
-        for (int i = 0; i < fullList.size() ; i++) {
-            if(fullList.get(i).getRoles().contains(Role.COACH)){
-                listCoaches.add(fullList.get(i));
+        List<Person> listCoaches = new ArrayList<>();
+        for (Person person : fullList) {
+            if (person.getRoles().contains(Role.COACH)) {
+                listCoaches.add(person);
             }
         }
         return listCoaches;
@@ -193,8 +189,7 @@ public class MainController {
         if (!getPerson.isPresent()){
             return null;
         }
-        Person person = getPerson.get();
-        return person;
+        return getPerson.get();
     }
 
     private HashMap<String, String> getWeather(){

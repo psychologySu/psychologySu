@@ -1,9 +1,11 @@
 package com.psychology.studywork.controller;
 
 import com.psychology.studywork.model.Event;
+import com.psychology.studywork.model.MedicalCard;
 import com.psychology.studywork.model.Person;
 import com.psychology.studywork.model.Role;
 import com.psychology.studywork.repository.EventRepository;
+import com.psychology.studywork.repository.MedicalCardRepository;
 import com.psychology.studywork.repository.PersonRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -25,6 +27,8 @@ public class CoachController {
     PersonRepository personRepository;
     @Autowired
     EventRepository eventRepository;
+    @Autowired
+    MedicalCardRepository medicalCardRepository;
 
     @GetMapping("/coachSpace")
     public String getCoachSpace(Model model){
@@ -51,12 +55,31 @@ public class CoachController {
 
     }
 
+    @GetMapping("/addMedicalCard")
+    public String addMedicalCard( Model model){
+        return "addMedicalCard";
+    }
+
+    @PostMapping("/addMedicalCard")
+    public String saveMedicalCard(@RequestParam String gender,
+                                  @RequestParam String yearsOld,
+                                  @RequestParam String isInRelationship,
+                                  @RequestParam String story) {
+        MedicalCard medicalCard = new MedicalCard();
+        medicalCard.setGender(gender);
+        medicalCard.setStory(story);
+        medicalCard.setInRelationship(checkBoxForBool(isInRelationship));
+        medicalCard.setYearsOld(yearsOld);
+        medicalCardRepository.save(medicalCard);
+        return "redirect:/coachSpace";
+    }
+
     private List<Event> getCoachEvents(String idCoach){
         List<Event> events = eventRepository.findAll();
         List<Event> coachEvents = new ArrayList<>();
-        for(int i = 0; i < events.size(); i++){
-            if(events.get(i).getIdCoach().equals(idCoach)){
-                coachEvents.add(events.get(i));
+        for (Event event : events) {
+            if (event.getIdCoach().equals(idCoach)) {
+                coachEvents.add(event);
             }
         }
         return coachEvents;
@@ -64,14 +87,14 @@ public class CoachController {
 
     private List<Person>getClientsOfEvents(List<Event>events){
         Set<String>clientsIdSet = new HashSet<>();
-        for (int i = 0; i <events.size() ; i++) {
-            clientsIdSet.add(events.get(i).getIdClient());
+        for (Event event : events) {
+            clientsIdSet.add(event.getIdClient());
         }
-        List<String> clientsId = new ArrayList<String>(clientsIdSet);
+        List<String> clientsId = new ArrayList<>(clientsIdSet);
         List<Person>clients = new ArrayList<>();
-        for(int i = 0; i < clientsId.size(); i++){
-            Optional<Person> person = personRepository.findById(clientsId.get(i));
-            if(person.isPresent()){
+        for (String s : clientsId) {
+            Optional<Person> person = personRepository.findById(s);
+            if (person.isPresent()) {
                 clients.add(person.get());
             }
         }
@@ -88,8 +111,7 @@ public class CoachController {
         if(!checkValidClientFromOptional(clientFromDB)){
             return "redirect:/";
         }
-        Person client = clientFromDB.get();
-        model.addAttribute("person", client);
+        model.addAttribute("person", clientFromDB.get());
         return "client";
     }
 
@@ -118,6 +140,14 @@ public class CoachController {
             return false;
         }
         return true;
+    }
+
+    private Person getValidClient(String Id){
+        Optional<Person> clientFromOptional = personRepository.findById(Id);
+        if(checkValidClientFromOptional(clientFromOptional)){
+            return null;
+        }
+        return clientFromOptional.get();
     }
 
     private Model makeModelForEvent(Model model, Person person){
@@ -162,8 +192,7 @@ public class CoachController {
             auth.setAuthenticated(false);
             return null;
         }
-        Person coach = getPerson.get();
-        return coach;
+        return getPerson.get();
     }
 
     @GetMapping("/deleteEvent/{Id}")
@@ -205,13 +234,20 @@ public class CoachController {
         return "redirect:/coachSpace";
     }
 
+    private Boolean checkBoxForBool(String ch){
+        if(ch.equals("on")){
+            return true;
+        }
+        return false;
+    }
+
     private Event getValidEvent(String id){
         Optional<Event> eventOptional = eventRepository.findById(id);
         if(!checkValidEvent(eventOptional)){
             return null;
         }
-        Event event = eventOptional.get();
-        return event;
+
+        return eventOptional.get();
     }
 
     private Boolean checkValidEvent(Optional<Event> event){
