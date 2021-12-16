@@ -55,7 +55,9 @@ xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
                 </div>
 
           <div class="col-md-2 ">
-            <button class="button_phone">заказать звонок</button>
+            <form th:action="@{/logout}" method="post">
+              <button class="button_phone" type="submit" value="Sign Out">Выход</button>
+            </form>
           </div>
           </div>
           <section>

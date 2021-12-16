@@ -59,6 +59,11 @@ header nav .menu_item:last-child {
   border-right: none;
 }
 
+img.bageCoach {
+  width: 240px;
+  height: 320px;
+}
+
 .bage {
   height: 84px;
   background-color: rgba(0, 0, 0, 0.6);

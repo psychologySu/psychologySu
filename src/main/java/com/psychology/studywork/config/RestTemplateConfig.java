@@ -8,7 +8,6 @@ import org.springframework.web.client.RestTemplate;
 
 @Configuration
 @ComponentScan("com.psychology.studywork")
-
 public class RestTemplateConfig {
     @Bean
     public RestTemplate restTemplate(){

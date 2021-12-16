@@ -15,6 +15,7 @@ public class DirectoryUserDetailsService  implements UserDetailsService {
     public DirectoryUserDetailsService(PersonRepository repo) {
         this.repo = repo;
     }
+
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException{
         try{
@@ -26,7 +27,6 @@ public class DirectoryUserDetailsService  implements UserDetailsService {
                         .accountLocked(!person.isEnable())
                         .password(password).authorities(person.getRoles())
                         .build();
-
             }
         }catch(Exception ex){
             ex.printStackTrace();

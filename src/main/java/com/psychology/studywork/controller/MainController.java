@@ -1,4 +1,5 @@
 package com.psychology.studywork.controller;
+
 import com.psychology.studywork.model.Event;
 import com.psychology.studywork.model.Person;
 import com.psychology.studywork.model.Role;
@@ -15,14 +16,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
-
-import java.nio.charset.Charset;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
-
 
 @Controller
 public class MainController {
@@ -35,155 +31,71 @@ public class MainController {
     PersonRepository personRepository;
 
     @GetMapping("/")
-    public String homepage(Model model)
-    {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        String clientEmail =  auth.getName();
-        Optional<Person> getPerson = Optional.ofNullable(personRepository.findByEmailIgnoreCase(clientEmail));
-        if(getPerson.isPresent()) {
+    public String homepage(Model model){
+        if(isAuthenticated()) {
+            model.addAttribute("stateOfLogin",true);
             model.addAttribute("loginValue", "/myspace");
             model.addAttribute("loginText","Личный кабинет");
         }else{model.addAttribute("loginValue","/login");
-            model.addAttribute("loginText","Авторизация");}
-    
-        HashMap<String,String> m = getWeather();
-        model.addAttribute("now",m.get("now"));
-        model.addAttribute("now_gt",m.get("now_gt"));
-        model.addAttribute("icon",m.get("icon"));
-        model.addAttribute("wind_speed",m.get("wind_speed"));
-        model.addAttribute("wind_gust",m.get("wind_gust"));
-        model.addAttribute("pressure_mm",m.get("pressure_mm"));
-        model.addAttribute("temp",m.get("temp"));
-        model.addAttribute("feels_like",m.get("feels_like"));
-        model.addAttribute("humidity",m.get("humidity"));
+            model.addAttribute("stateOfLogin", false);
+            model.addAttribute("loginText","Авторизация");
+        }
+        model.addAttribute("stateForGetWeather", true);
+        try{
+            fillWeatherForm(model);
+        }catch(Exception ex){
+            model.addAttribute("stateForGetWeather", false);
+            System.out.println("Ошибка при получении данных о погоде");
+        }
+
         return "index";
     }
+
+    private Boolean isAuthenticated(){
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String clientEmail =  auth.getName();
+        Optional<Person> getPerson = Optional.ofNullable(personRepository.findByEmailIgnoreCase(clientEmail));
+        if(getPerson.isPresent()){
+            return true;
+        }
+        return false;
+    }
+
+    private void fillWeatherForm(Model model){
+        HashMap<String,String> weather = getWeather();
+        model.addAttribute("now",weather.get("now"));
+        model.addAttribute("now_gt",weather.get("now_gt"));
+        model.addAttribute("icon",weather.get("icon"));
+        model.addAttribute("wind_speed",weather.get("wind_speed"));
+        model.addAttribute("wind_gust",weather.get("wind_gust"));
+        model.addAttribute("pressure_mm",weather.get("pressure_mm"));
+        model.addAttribute("temp",weather.get("temp"));
+        model.addAttribute("feels_like",weather.get("feels_like"));
+        model.addAttribute("humidity",weather.get("humidity"));
+    }
+
     @GetMapping("/coaches")
     public String getCoaches(Model model){
         List<Person> coaches = findCoaches();
         model.addAttribute("coaches",coaches);
         return "coaches";
     }
+
     @GetMapping("/coaches/{id}")
     public String getCoach(@PathVariable String id, Model model){
         List<Person> result = findCoaches();
-        if(result!=null){
+        if(result != null){
             for (int i = 0; i < result.size() ; i++) {
                 if(result.get(i).getId().equals(id)){
-
                     Person person = result.get(i);
                     model.addAttribute("person",person);
                     return "coach";
-
                 }
             }
-        } return "/coaches";
-
-
-    }
-    @GetMapping("/myspace")
-    public String getMySpace(){
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        String clientEmail =  auth.getName();
-        Optional<Person> getPerson = Optional.ofNullable(personRepository.findByEmailIgnoreCase(clientEmail));
-       Person person = getPerson.get();
-       Set<Role>roles = person.getRoles();
-
-        if (roles.contains(Role.ADMIN)) {
-            return "redirect:adminSpace";
-        }if(roles.contains(Role.COACH)){
-            return "redirect:coachSpace";
-        }
-        return "redirect:clientSpace";
-    }
-    @GetMapping("/getConsultation/{Id}")
-    public String getConsultation(@PathVariable String Id,
-                                  Map<String,Object> model)
-    {
-        String coachId = Id;
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        String clientEmail =  auth.getName();
-        Optional<Person> getPerson = Optional.ofNullable(personRepository.findByEmailIgnoreCase(clientEmail));
-        model.put("create",LocalDateTime.now());
-        model.put("when", "");
-        Optional<Person> coach = personRepository.findById(coachId);
-        if(!coach.isPresent()){
-            return "/coaches";  ///******!!!!СДЕЛАТЬ ОБРАБОТЧИК ОШИБОК!!!!****/////
-        }
-
-        model.put("clientEmail", clientEmail);
-        model.put("coachId", coachId);
-        model.put("description","" );
-        if(getPerson.isPresent()){
-            Person person = getPerson.get();
-            model.put("clientId", person.getId());
-            model.put("name", person.getName());
-            model.put("surname", person.getSurname());
-            model.put("gender", person.getGender());
-            model.put("email",person.getEmail());
-            model.put("telephone", person.getTelephone());
-            model.put("birthday", person.getBirthday());
-            return "getConsultation";
-        }
-        else{
-            model.put("name", "");
-            model.put("surname", "");
-            model.put("gender", "");
-            model.put("email","");
-            model.put("telephone","");
-            return "getConsultation";
-            }
-    }
-    @PostMapping("/getConsultation/{Id}")
-    public String createNewConsultation(
-                                        @PathVariable String Id,
-                                        @RequestParam String data,
-                                        @RequestParam String description,
-                                        @RequestParam String name,
-                                        @RequestParam String surname,
-                                        @RequestParam String birthday,
-                                        @RequestParam String typeOfEvent,
-                                        @RequestParam String gender,
-                                        @RequestParam String email,
-                                        @RequestParam String telephone,
-                                        Map<String,Object> model )
-    {
-        Optional<Person>coach = personRepository.findById(Id);
-        if(!coach.isPresent()){
-            HttpClientErrorException.BadRequest.create(HttpStatus.BAD_REQUEST,"Not Found this coach", new HttpHeaders(), new byte[128], Charset.defaultCharset());
-        }
-        Event event = new Event();
-        event.setIdCoach(Id);
-        try {
-            event.setData(LocalDateTime.parse(data));
-        }
-        catch (Exception ex){
-            System.out.println("Ошибка ввода даты при регистрации события");
-            return "getConsultation";
-        }
-        event.setTypeOfEvent(typeOfEvent);
-        event.setDescription(description);
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        String clientEmail =  auth.getName();
-        Optional<Person> client = Optional.ofNullable(personRepository.findByEmailIgnoreCase(clientEmail));
-        if(client.isPresent()){
-            event.setIdClient(client.get().getId());
-        }else{
-            Person person = new Person();
-            person.setEmail(email);
-            person.setSurname(surname);
-            person.setName(name);
-            person.setGender(gender);
-            person.setTelephone(telephone);
-            person.setBirthday(LocalDate.parse(birthday));
-            personRepository.save(person);
-            event.setIdClient(person.getId());
-        }
-        eventRepository.save(event);
-        return "redirect:/";
-
+        } return "redirect:/coaches";
 
     }
+
     public List<Person> findCoaches(){
         List<Person> fullList = personRepository.findAll();
         List<Person> listCoaches = new ArrayList<Person>();
@@ -194,40 +106,116 @@ public class MainController {
         }
         return listCoaches;
     }
-    private HashMap<String, String> getWeather() {
 
+    @GetMapping("/myspace")
+    public String getMySpace(){
+       Person person = getValidAuthPerson();
+       if(person == null){
+           return "redirect:/";
+       }
+       Set<Role>roles = person.getRoles();
+       if(roles.contains(Role.ADMIN)){
+            return "redirect:adminSpace";
+       }
+       if(roles.contains(Role.COACH)){
+            return "redirect:coachSpace";
+       }
+       return "redirect:clientSpace";
+    }
+
+    @GetMapping("/getConsultation/{Id}")
+    public String getConsultation(@PathVariable String Id, Map<String,Object> model){
+        Person person = getValidAuthPerson();
+        model.put("create",LocalDateTime.now());
+        model.put("when", "");
+        model.put("coachId", Id);
+        model.put("description","" );
+        if(person != null){
+            model.put("clientEmail", person.getEmail());
+            model.put("clientId", person.getId());
+            model.put("name", person.getName());
+            model.put("surname", person.getSurname());
+            model.put("gender", person.getGender());
+            model.put("email","");
+            model.put("telephone", person.getTelephone());
+            model.put("birthday", person.getBirthday());
+            model.put("personState",false);
+        }
+        else{
+            return "redirect:/login";
+        }
+        return "getConsultation";
+    }
+
+    @PostMapping("/getConsultation/{Id}")
+    public String createNewConsultation(
+                                        @PathVariable String Id,
+                                        @RequestParam String data,
+                                        @RequestParam String description,
+                                        @RequestParam String name,
+                                        @RequestParam String surname,
+                                        @RequestParam String typeOfEvent,
+                                        @RequestParam String gender,
+                                        @RequestParam String telephone)
+    {
+        Optional<Person>coach = personRepository.findById(Id);
+        if(!coach.isPresent()){
+            return "redirect:/mySpace";
+        }
+        Event event = new Event();
+        event.setIdCoach(Id);
+        try {
+            event.setData(LocalDateTime.parse(data));
+        }
+        catch (Exception ex){
+            return "redirect:/getConsultation/{Id}";
+        }
+        event.setTypeOfEvent(typeOfEvent);
+        event.setDescription(description);
+        Person client = getValidAuthPerson();
+        if(client != null){
+            client.setName(name);
+            client.setGender(gender);
+            client.setSurname(surname);
+            client.setTelephone(telephone);
+            event.setIdClient(client.getId());
+        }else{
+            return "redirect:/login";
+        }
+        eventRepository.save(event);
+        return "redirect:/";
+    }
+
+    private Person getValidAuthPerson(){
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String clientEmail =  auth.getName();
+        Optional<Person> getPerson = Optional.ofNullable(personRepository.findByEmailIgnoreCase(clientEmail));
+        if (!getPerson.isPresent()){
+            return null;
+        }
+        Person person = getPerson.get();
+        return person;
+    }
+
+    private HashMap<String, String> getWeather(){
         JSONObject ob= getJSONObject();
         HashMap<String, String > result = new HashMap<>();
         result.put("now",ob.get("now").toString());
         result.put("now_gt",(String) ob.get("now_gt"));
         LinkedHashMap<String,Object> fact =(LinkedHashMap<String, Object>) ob.get("fact");
         result.put("icon", (String)fact.get("icon"));
-        String f = fact.get("wind_speed").getClass().toString();
-        if(f.equals("class java.lang.Integer")){
-            result.put("wind_speed", Integer.toString((Integer)fact.get("wind_speed")));
-        }
-        if(f.equals("class java.lang.double")){
-            result.put("wind_speed", Double.toString((Double)fact.get("wind_speed")));
-        }
-        f = fact.get("wind_gust").getClass().toString();
-        if(f.equals("class java.lang.Integer")){
-            result.put("wind_gust", Integer.toString((Integer)fact.get("wind_gust")));
-        }
-        if(f.equals("class java.lang.double")){
-            result.put("wind_gust", Double.toString((Double)fact.get("wind_gust")));
-        }
-        result.put("pressure_mm", Integer.toString((Integer)fact.get("pressure_mm")));
-        result.put("temp", Integer.toString((Integer)fact.get("temp")));
-        result.put("feels_like", Integer.toString((Integer)fact.get("feels_like")));
-        result.put("humidity",Integer.toString((Integer)fact.get("humidity")));
+        result.put("wind_speed", fact.get("wind_speed").toString());
+        result.put("wind_gust", fact.get("wind_gust").toString());
+        result.put("pressure_mm", fact.get("pressure_mm").toString());
+        result.put("temp", fact.get("temp").toString());
+        result.put("feels_like", fact.get("feels_like").toString());
+        result.put("humidity",fact.get("humidity").toString());
         return result;
     }
+
     private JSONObject getJSONObject(){
-        String key = "X-Yandex-API-Key: b1546c10-03aa-41aa-9d7a-6ecc3782dc1d";
-        final String uri = "https://api.weather.yandex.ru/v2/informers?lat=56.8519&lon=60.6122&lang=ru_RU X-Yandex-API-Key:b1546c10-03aa-41aa-9d7a-6ecc3782dc1d" ;
         HttpHeaders headers = new HttpHeaders();
         headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
-
         headers.set("X-Yandex-API-Key", "b1546c10-03aa-41aa-9d7a-6ecc3782dc1d");
         HttpEntity<String> entity = new HttpEntity<String>( headers);
         ResponseEntity<JSONObject> res = restTemplate.exchange("https://api.weather.yandex.ru/v2/informers?lat=56.8519&lon=60.6122&lang=ru_RU", HttpMethod.GET,entity,JSONObject.class);

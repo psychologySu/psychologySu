@@ -1,7 +1,6 @@
 package com.psychology.studywork.model;
 
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -16,6 +15,9 @@ import java.util.Set;
 @Entity
 @Data
 @NoArgsConstructor
+@AllArgsConstructor
+@Getter
+@Setter
 public class Person implements UserDetails {
     @Id
     @GeneratedValue(generator = "system-uuid")
@@ -172,5 +174,16 @@ public class Person implements UserDetails {
 
     public void setAboutMe(String aboutMe) {
         this.aboutMe = aboutMe;
+    }
+
+    @PrePersist
+    void onCreate(){
+        this.setCreated(LocalDateTime.now());
+        this.setModified(LocalDateTime.now());
+    }
+
+    @PreUpdate
+    void onUpdate(){
+        this.setModified(LocalDateTime.now());
     }
 }

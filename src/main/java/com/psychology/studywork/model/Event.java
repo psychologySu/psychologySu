@@ -6,6 +6,7 @@ import org.hibernate.annotations.GenericGenerator;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.PrePersist;
 import java.time.LocalDateTime;
 
 @Entity
@@ -37,7 +38,7 @@ public class Event implements Comparable<Event> {
         this.data= data;
         this.typeOfEvent = "none";
     }
-    public LocalDateTime getCreateData() {
+    public LocalDateTime getCreateData(){
         return createData;
     }
 
@@ -91,6 +92,12 @@ public class Event implements Comparable<Event> {
     public void setTypeOfEvent(String typeOfEvent) {
         this.typeOfEvent = typeOfEvent;
     }
+
+    @PrePersist
+    public void onCreate(){
+        this.setCreateData(LocalDateTime.now());
+    }
+
     @Override
     public int compareTo(Event o) {
         return getData().compareTo(o.getData());

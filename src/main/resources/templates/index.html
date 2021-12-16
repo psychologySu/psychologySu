@@ -51,10 +51,17 @@
             <div class="descr_phone">Звоните нам ежедневно</div>
             <a class = "phone_link" href="tel:+79527411697">8 952 741 16 97</a>
                 </div>
-          <div class="col-md-2 ">
+        <div class="but" th:if = "${stateOfLogin}">
+          <form th:action="@{/logout}" method="post">
+            <button class="button_phone" type="submit" value="Sign Out">Выход</button>
+          </form></div>
+        <div class="col-md-2 ">
+          <div class="but" th:unless = "${stateOfLogin}">
             <form th:action="@{/logout}" method="post">
-              <button class="button_phone" type="submit" value="Sign Out">Выход</button>
-            </form>
+              <button class="button_phone" type="submit" value="Sign Out">Вход</button>
+            </form></div>
+          <div class="col-md-2 ">
+          
                 
            
           </div>
@@ -63,31 +70,32 @@
             
             <div class="row">  
               <div class="col-md-2">
-                <table>
-                                    
-                  <tr>
-                    <td><img class = "weaterIcon" th:src="@{'img/48/' + ${icon}+ '.png'}" alt=""></td><td class = thempTable th:text = "${temp}"></td>
-                  </tr> 
-                  <tr class = "ThemperParametrs">
-                    <td >Скорость ветра</td><td th:text = "${wind_speed}"></td>
-                  </tr> 
-                  <tr class = "ThemperParametrs">
-                    <td>Порыв ветра</tdclass><td th:text = "${wind_gust}"></td>
-                  </tr> 
-                  <tr class = "ThemperParametrs">
-                    <td>Давление мм.р.с.</td><td th:text = "${pressure_mm}"></td>
-                  </tr> 
-                  <tr class = "ThemperParametrs">
-                    <td>Температура</td><td th:text = "${temp}"></td>
-                  </tr> 
-                  <tr class = "ThemperParametrs">
-                    <td>Чувствуется как</td><td th:text = "${feels_like}"></td>
-                  </tr> 
-                  <tr class = "ThemperParametrs">
-                    <td>Влажность воздуха</td><td th:text = "${humidity}"></td>
-                  </tr>                   
-                </table>                
-                     <img class = "logotypeWeather" src="img/48/logo.png" alt="">                    
+                <div class="weather" th:if = "${stateForGetWeather}">
+                  <table>                                    
+                    <tr>
+                      <td><img class = "weaterIcon" th:src="@{'img/48/' + ${icon}+ '.png'}" alt=""></td><td class = thempTable th:text = "${temp}"></td>
+                    </tr> 
+                    <tr class = "ThemperParametrs">
+                      <td >Скорость ветра</td><td th:text = "${wind_speed}"></td>
+                    </tr> 
+                    <tr class = "ThemperParametrs">
+                      <td>Порыв ветра</tdclass><td th:text = "${wind_gust}"></td>
+                    </tr> 
+                    <tr class = "ThemperParametrs">
+                      <td>Давление мм.р.с.</td><td th:text = "${pressure_mm}"></td>
+                    </tr> 
+                    <tr class = "ThemperParametrs">
+                      <td>Температура</td><td th:text = "${temp}"></td>
+                    </tr> 
+                    <tr class = "ThemperParametrs">
+                      <td>Чувствуется как</td><td th:text = "${feels_like}"></td>
+                    </tr> 
+                    <tr class = "ThemperParametrs">
+                      <td>Влажность воздуха</td><td th:text = "${humidity}"></td>
+                    </tr>                   
+                  </table>                
+                  <img class = "logotypeWeather" src="img/48/logo.png" alt="">
+                </div>
               </div>           
               <div class="col-md-8 ">
                 <h1 class = "header_text1">Сервис PsychologySu!</h1>

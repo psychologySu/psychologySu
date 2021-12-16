@@ -31,7 +31,7 @@ xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
                   <li class="menu_item"><a href="#" class="menu_link">Наука неиробиология</a></li>
                   <li class="menu_item"><a href="/coaches" class="menu_link">Наши психологи</a></li>
                   <li class="menu_item"><a href="#" class="menu_link">Контакты</a></li>
-                  <li class="menu_item"><a href="/login" class="menu_link">Вход в личный кабинет</a></li>
+                  <li class="menu_item"><a href="/myspace" class="menu_link">Вход в личный кабинет</a></li>
                 </ul>
          </div>
         </div>
@@ -43,8 +43,7 @@ xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
         <div class="container">
           <div class="row">
           <div class="col-lx-4 offset-lx-1 col-md-4 ">
-            <a class="subheader_link" href="#"><img class="Uber777_img" src="img/logo/Uber777.png" alt=""></a>
-            
+            <a class="subheader_link" href="#"><img class="Uber777_img" src="../img/logo/Uber777.png" alt=""></a>
             <div class="descr_Uber">Сообщество врачей</div>
           </div>
           
@@ -55,7 +54,9 @@ xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
                 </div>
 
           <div class="col-md-2 ">
-            <button class="button_phone">заказать звонок</button>
+            <form th:action="@{/logout}" method="post">
+              <button class="button_phone" type="submit" value="Sign Out">Выход</button>
+            </form>
           </div>
           </div>
           <section>
@@ -66,7 +67,7 @@ xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
                       <h2> Данные пользователя</h2>
           <form action="#" th:action="@{'/getConsultation/' + ${coachId}}" th:object="${model}" method="post">
                       <table>
-                        <tr>
+                        <tr th:if = "${personState}">
                             <td>Email:</td>
                             <td><input type='text' field="*{email}" name='email' th:value="${email}"></td>
                         </tr>

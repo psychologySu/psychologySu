@@ -8,7 +8,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-
 import java.time.LocalDate;
 import java.util.HashSet;
 
@@ -21,6 +20,7 @@ public class RegistrationController {
     public String getRegistrationPage(){
         return "registration";
     }
+
     @PostMapping("/registration")
     public String addPerson(@RequestParam String name,
                             @RequestParam String email,
@@ -28,9 +28,8 @@ public class RegistrationController {
                             @RequestParam String gender,
                             @RequestParam String surname,
                             @RequestParam String birthday,
-                            @RequestParam String password)
-    {
-        if(name==""&& surname==""&&password==""){
+                            @RequestParam String password){
+        if(name == "" || surname == "" || password == ""){
             return "registration";
         }
         Person person = new Person();
@@ -40,7 +39,11 @@ public class RegistrationController {
         person.setName(name);
         person.setSurname(surname);
         person.setEmail(email);
-        person.setBirthday(LocalDate.parse(birthday));
+        try {
+            person.setBirthday(LocalDate.parse(birthday));
+        }catch (Exception ex){
+            return "redirect:/registration";
+        }
         person.setPassword(password);
         HashSet<Role> roles = new HashSet<>();
         roles.add(Role.CLIENT);

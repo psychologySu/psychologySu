@@ -28,10 +28,10 @@ xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
                 <ul class="nav_list">
                   <li class="menu_item"><a href="/" class="menu_link">Главная</a></li>
                   <li class="menu_item"><a href="#" class="menu_link">Наука психология</a></li>
-                  <li class="menu_item"><a href="#" class="menu_link">Наука неиробиология</a></li>
-                  <li class="menu_item"><a href="/coaches" class="menu_link">Наши психологи</a></li>
-                  <li class="menu_item"><a href="#" class="menu_link">Контакты</a></li>
-                  <li class="menu_item"><a href="/myspace" class="menu_link">Вход в личный кабинет</a></li>
+                  <li class="menu_item"><a href="/makeMC" class="menu_link">Создать медкарту</a></li>
+                  <li class="menu_item"><a href="/coaches" class="menu_link">Психологи</a></li>
+                  <li class="menu_item"><a href="/clients" class="menu_link">Клиенты</a></li>
+                  <li class="menu_item"><a href="/editClientPage" class="menu_link">Редактировать</a></li>
                 </ul>
          </div>
         </div>
@@ -62,41 +62,39 @@ xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
           </div>
           <section>
             <div class="description">
-                <form action="#" th:action="@{'/editClientSpace'}" th:object="${model}" method="post"></form>
-              <h1> Редактирование информации о пользователе </h1>
+                <form action="#" th:action="@{'/getCoachSpace'}" th:object="${model}" method="get">
+              <h1 th:text = "${person.name}"> </h1> <h1 th:text = "${person.surname}"></h1>
               <div class="row">                                     
           
-            <div class="col-md-5 text-left">                  
-                        
+            <div class="col-md-5 text-left">
+                      <h2>Ближайшие события</h2>
+                        <th:block th:each="event : ${events}">
                             <table class = "tableOfPersonEvent">
-                              <tr>
-                                <td>Имя:</td>
-                                <td><input type='text' field="*{name}" name='name' th:value = "${name}" /></td>
+                            <tr>
+                                <td>Дата</td>
+                                <td th:text = "${event.data}"></td>
                             </tr>
                             <tr>
-                              <td>Фамилия:</td>
-                              <td><input type='text' field="*{surname}" name='surname' th:value = "${surname}"/></td>
-                          </tr>
-                          <tr>
-                            <td>Телефон:</td>
-                            <td><input type='text' ield="*{phone}" name='telephone' th:value = "${telephone}" /></td>
-                         </tr>
-                         <tr>
-                          <td>Ваш пол:</td>
-                          <td><input type='text' field="*{gender}" name='gender' th:value ="${gender}" /></td>
-                       </tr>
-                       <tr>
-                        <td>Ваш email:</td>
-                        <td><input type='text' field="*{email}" name='gender' th:value ="${email}" /></td>
-                     </tr>
-                       <tr>
-                        <td>Дата рождения:</td>
-                        <td><input type="date" field="*{birthday}" name="birthday" th:value ="${birthday}">
-                          </td>
-                     </tr>             
+                                <td>Описание</td>
+                                <td th:text = "${event.description}"></td>
+                            </tr>
+                            <tr>
+                                <td>Клиент</td>
+                                <td><a th:href="@{'/clients/' + ${event.idClient}}">Страница пациента</a></td>
+                            </tr>
+                            <tr>
+                                <td>Тип консультации</td>
+                                <td th:text = "${event.typeOfEvent}"></td>
+                            </tr>
+                            <tr>
+                              <td><a th:href="@{'/editEvent/' + ${event.Id}}">Редактировать событие</a></td>
+                            </tr>
+                            <tr>                              
+                              <td><a th:href="@{'/deleteEvent/' + ${event.Id}}">удалить событие</a></td>
+                            </tr>
                         </table> 
                         <div>---------------</div>                          
-                       
+                        </th:block>
                       
                   
   
